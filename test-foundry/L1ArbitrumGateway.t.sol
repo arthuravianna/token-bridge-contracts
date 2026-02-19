@@ -60,6 +60,13 @@ abstract contract L1ArbitrumGatewayTest is Test {
             withdrawalAmount,
             "Wrong l1 gateway balance"
         );
+
+        L1ArbitrumGateway.WithdrawalInfo memory withdrawalInfo =
+            L1ArbitrumGateway(address(l1Gateway)).getWithdrawalInfo(exitNum);
+        assertEq(withdrawalInfo.l1Token, address(token), "Wrong token in withdrawal info");
+        assertEq(withdrawalInfo.from, from, "Wrong from in withdrawal info");
+        assertEq(withdrawalInfo.to, user, "Wrong to in withdrawal info");
+        assertEq(withdrawalInfo.amount, withdrawalAmount, "Wrong amount in withdrawal info");
     }
 
     function test_finalizeInboundTransfer_revert_NotFromBridge() public {

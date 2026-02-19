@@ -42,7 +42,15 @@ abstract contract L1ArbitrumGateway is
     using SafeERC20 for IERC20;
     using Address for address;
 
+    struct WithdrawalInfo {
+        address l1Token;
+        address from;
+        address to;
+        uint256 amount;
+    }
+
     address public override inbox;
+    mapping (uint256 => WithdrawalInfo) public finalizedWithdrawals;
 
     event DepositInitiated(
         address l1Token,
@@ -117,6 +125,14 @@ abstract contract L1ArbitrumGateway is
             // callHookData should always be 0 since inboundEscrowAndCall is disabled
             callHookData = bytes("");
         }
+
+        // register the withdrawal as finalized before making the external call to avoid reentrancy issues with call hooks
+        finalizedWithdrawals[exitNum] = WithdrawalInfo({
+            l1Token: _token,
+            from: _from,
+            to: _to,
+            amount: _amount
+        });
 
         // we ignore the returned data since the callHook feature is now disabled
         (_to, ) = getExternalCall(exitNum, _to, callHookData);
@@ -341,6 +357,10 @@ abstract contract L1ArbitrumGateway is
         return
             interfaceId == this.outboundTransferCustomRefund.selector ||
             super.supportsInterface(interfaceId);
+    }
+
+    function getWithdrawalInfo(uint256 exitNum) public view returns (WithdrawalInfo memory) {
+        return finalizedWithdrawals[exitNum];
     }
 
     /**
