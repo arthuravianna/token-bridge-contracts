@@ -42,13 +42,6 @@ abstract contract L1ArbitrumGateway is
     using SafeERC20 for IERC20;
     using Address for address;
 
-    struct WithdrawalInfo {
-        address l1Token;
-        address from;
-        address to;
-        uint256 amount;
-    }
-
     address public override inbox;
     mapping (uint256 => WithdrawalInfo) public finalizedWithdrawals;
 
@@ -359,7 +352,7 @@ abstract contract L1ArbitrumGateway is
             super.supportsInterface(interfaceId);
     }
 
-    function getWithdrawalInfo(uint256 exitNum) public view returns (WithdrawalInfo memory) {
+    function getWithdrawalInfo(uint256 exitNum) external view returns (WithdrawalInfo memory) {
         return finalizedWithdrawals[exitNum];
     }
 

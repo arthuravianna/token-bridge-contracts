@@ -26,6 +26,13 @@ import "../../libraries/IERC165.sol";
  * @title Common interface for gatways on L1 messaging to Arbitrum.
  */
 interface IL1ArbitrumGateway is ITokenGateway, IERC165 {
+    struct WithdrawalInfo {
+        address l1Token;
+        address from;
+        address to;
+        uint256 amount;
+    }
+
     function inbox() external view returns (address);
 
     /**
@@ -55,4 +62,6 @@ interface IL1ArbitrumGateway is ITokenGateway, IERC165 {
         uint256 _gasPriceBid,
         bytes calldata _data
     ) external payable returns (bytes memory);
+    
+    function getWithdrawalInfo(uint256 exitNum) external view returns (WithdrawalInfo memory);
 }
